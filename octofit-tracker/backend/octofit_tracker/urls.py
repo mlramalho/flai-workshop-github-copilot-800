@@ -22,12 +22,15 @@ from .views import (
     LeaderboardViewSet, WorkoutViewSet
 )
 
-# Get environment-specific base URL
-codespace_name = os.environ.get('CODESPACE_NAME')
-if codespace_name:
-    base_url = f"https://{codespace_name}-8000.app.github.dev"
+# Get Codespace URL for API base
+CODESPACE_NAME = os.environ.get('CODESPACE_NAME')
+if CODESPACE_NAME:
+    BASE_URL = f"https://{CODESPACE_NAME}-8000.app.github.dev"
+    print(f"Backend API running at: {BASE_URL}")
 else:
-    base_url = "http://localhost:8000"
+    # This should only be used for local development outside Codespaces
+    BASE_URL = "http://localhost:8000"
+    print("Warning: CODESPACE_NAME not found. Using localhost as fallback.")
 
 # Create router and register viewsets
 router = DefaultRouter()

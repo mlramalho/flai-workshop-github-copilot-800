@@ -26,14 +26,23 @@ SECRET_KEY = 'django-insecure-513qy*ne@^#(6+ilt&y8nfx&qvr)nd84blsy*8#4%ib0^r#9ka
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
-if os.environ.get('CODESPACE_NAME'):
-    ALLOWED_HOSTS.append(f"{os.environ.get('CODESPACE_NAME')}-8000.app.github.dev")
+# Configure for GitHub Codespaces
+CODESPACE_NAME = os.environ.get('CODESPACE_NAME')
 
-# CSRF Configuration for Codespaces
-CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://127.0.0.1:8000']
-if os.environ.get('CODESPACE_NAME'):
-    CSRF_TRUSTED_ORIGINS.append(f"https://{os.environ.get('CODESPACE_NAME')}-8000.app.github.dev")
+if CODESPACE_NAME:
+    # Running in GitHub Codespaces
+    ALLOWED_HOSTS = [
+        f"{CODESPACE_NAME}-8000.app.github.dev",
+        'localhost',  # Still allow localhost for internal connections
+        '127.0.0.1'
+    ]
+    CSRF_TRUSTED_ORIGINS = [
+        f"https://{CODESPACE_NAME}-8000.app.github.dev"
+    ]
+else:
+    # Fallback for local development only
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+    CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://127.0.0.1:8000']
 
 
 # Application definition
@@ -85,6 +94,8 @@ WSGI_APPLICATION = 'octofit_tracker.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
+# Note: MongoDB uses 'localhost' because it runs in the same container as Django
+# This is correct even in GitHub Codespaces environment
 
 DATABASES = {
     'default': {
@@ -92,7 +103,7 @@ DATABASES = {
         'NAME': 'octofit_db',
         'ENFORCE_SCHEMA': False,
         'CLIENT': {
-            'host': 'localhost',
+            'host': 'localhost',  # MongoDB is running locally in the same container
             'port': 27017,
         }
     }
